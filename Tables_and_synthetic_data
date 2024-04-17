@@ -1,0 +1,16 @@
+CREATE TABLE "table"(
+	userId INT,
+	"eventName" VARCHAR(100),
+	"time" DATE,
+	"product" INT
+);
+INSERT INTO "table" VALUES
+	(1, 'register', '2023-03-01', 0),
+	(1, 'download', '2023-03-01', 1),
+	(2, 'register', '2023-03-01', 0),
+	(3, 'register', '2023-03-09', 0),
+	(3, 'download', '2023-03-09', 1);
+INSERT INTO "table" VALUES 
+(2, 'buy', '2023-03-01', 3),
+(2, 'buy', '2023-03-01', 2),
+(1, 'buy', '2023-03-01', 1);
