@@ -1,0 +1,31 @@
+WITH users_register AS(
+	SELECT CAST (DATE_TRUNC('week', "time")AS date) AS "week",
+	COUNT(DISTINCT userId) AS users
+	FROM "table"
+	WHERE "eventName"='register'
+	GROUP BY "week"
+),
+users_buy as (
+	SELECT CAST (DATE_TRUNC('week', "time")AS date) AS "week",
+	COUNT(DISTINCT userId) AS users_buy
+	
+	FROM "table"
+	WHERE "eventName"='buy'
+	GROUP BY "week"
+),
+products_rating AS(
+	SELECT CAST (DATE_TRUNC('week', "time")AS date) AS "week", product,
+	DENSE_RANK() OVER (PARTITION BY CAST (DATE_TRUNC('week', "time")AS date) 
+				 ORDER BY -COUNT(DISTINCT userId)) AS rating
+	FROM "table"
+	WHERE "eventName"='buy'
+	GROUP BY "week", product
+)
+SELECT week, product, rating
+FROM
+(SELECT users_register."week", 
+max(CAST("users_buy" AS FLOAT)/"users") AS max_CR, product, rating
+FROM users_register RIGHT JOIN (users_buy RIGHT JOIN products_rating
+ON users_buy."week"=products_rating."week") ON users_register."week"=products_rating."week"
+GROUP BY users_register."week", product, rating
+ORDER BY rating)
