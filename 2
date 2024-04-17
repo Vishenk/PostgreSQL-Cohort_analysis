@@ -1,0 +1,15 @@
+#Create table and insert data
+df=pd.DataFrame({
+    'userId': [1,	1,	2,	3,	3],
+    'eventName': ['register',	'download',	'register',	'register',	'download'],
+    'time': [np.datetime64('2023-03-01'),	np.datetime64('2023-03-01'),	np.datetime64('2023-03-01'),	np.datetime64('2023-03-09'),	np.datetime64('2023-03-09')],
+    'product': [0,	1,	0,	0,	1]
+})
+# Task 2
+cohorts=df.loc[df.eventName=='register'].groupby(pd.Grouper(freq='W', key='time'))['userId'].nunique()
+users_download=df.loc[df.eventName=='download'].groupby(pd.Grouper(freq='W', key='time'))['userId'].nunique()
+result=pd.merge(cohorts, users_download, how='left', on='time')
+result.reset_index(inplace=True)
+result.columns=['week', 'users', 'CR']
+result['CR']=result['CR']/result['users']
+print(result)
