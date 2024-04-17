@@ -1,0 +1,18 @@
+WITH cohorts AS(
+	SELECT CAST (DATE_TRUNC('week', "time")AS date) AS "week",
+	COUNT(DISTINCT userId) AS users
+	FROM "table"
+	WHERE "eventName"='register'
+	GROUP BY "week"
+),
+users_download as (
+	SELECT CAST (DATE_TRUNC('week', "time")AS date) AS "week",
+	COUNT(DISTINCT userId) AS users_download
+	FROM "table"
+	WHERE "eventName"='download'
+	GROUP BY "week"
+)
+SELECT cohorts."week", "users", CAST("users_download" AS FLOAT)/"users" AS CR 
+FROM cohorts 
+LEFT JOIN users_download 
+ON cohorts."week"=users_download."week";
